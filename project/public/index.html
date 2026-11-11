@@ -1,0 +1,1784 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Enterprise Compliance Audit Platform for PCI-DSS, GDPR, HIPAA, SOC 2, and ISO 27001" />
+    <title>Compliance Assistant — Enterprise Audit Platform</title>
+    <style>
+      :root {
+        --bg: #0b1220;
+        --panel: #111a2e;
+        --panel-2: #16223a;
+        --border: #233252;
+        --text: #e6ecf5;
+        --muted: #8a9bb8;
+        --accent: #4f8cff;
+        --accent-2: #6ee7b7;
+        --accent-3: #ffb86b;
+        --user-bubble: #1f3a6b;
+        --bot-bubble: #16223a;
+        --critical: #ef4444;
+        --high: #f97316;
+        --medium: #eab308;
+        --low: #22c55e;
+        --success: #22c55e;
+        --error: #ef4444;
+        --warning: #eab308;
+        --info: #4f8cff;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+          'Helvetica Neue', Arial, sans-serif;
+        font-size: 15px;
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* Focus visible styles for accessibility */
+      *:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+
+      button:focus-visible,
+      input:focus-visible,
+      textarea:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+
+      header {
+        padding: 20px 28px;
+        border-bottom: 1px solid var(--border);
+        background: linear-gradient(180deg, #0e172b 0%, #0b1220 100%);
+      }
+
+      header h1 {
+        margin: 0 0 4px;
+        font-size: 20px;
+        letter-spacing: 0.2px;
+      }
+
+      header .tagline {
+        margin: 0;
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .pillars {
+        display: flex;
+        gap: 10px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+      }
+
+      .pillar {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding: 5px 10px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        color: var(--muted);
+      }
+
+      .pillar.active {
+        border-color: var(--accent);
+        color: var(--accent);
+        background: rgba(79, 140, 255, 0.08);
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: 380px 1fr;
+        height: calc(100vh - 110px);
+      }
+
+      aside {
+        border-right: 1px solid var(--border);
+        background: var(--panel);
+        padding: 18px 16px;
+        overflow-y: auto;
+      }
+
+      .group {
+        margin-bottom: 22px;
+      }
+
+      .group h2 {
+        font-size: 11px;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin: 0 0 4px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .group h2 .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--accent);
+        flex: 0 0 8px;
+      }
+
+      .group.modernize h2 .dot { background: var(--accent-2); }
+      .group.devops h2 .dot { background: var(--accent-3); }
+
+      .group .blurb {
+        font-size: 12px;
+        color: var(--muted);
+        margin: 0 0 10px;
+      }
+
+      /* Framework Selector Styles */
+      .framework-selector {
+        margin: 12px 0;
+        padding: 12px;
+        background: var(--panel-2);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+      }
+
+      .framework-selector h3 {
+        font-size: 11px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin: 0 0 8px;
+      }
+
+      .framework-options {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .framework-option {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .framework-option input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+        accent-color: var(--accent);
+      }
+
+      .framework-option label {
+        font-size: 12px;
+        color: var(--text);
+        cursor: pointer;
+        flex: 1;
+      }
+
+      .framework-badge {
+        display: inline-block;
+        font-size: 9px;
+        padding: 2px 6px;
+        border-radius: 4px;
+        background: rgba(79, 140, 255, 0.15);
+        color: var(--accent);
+        font-weight: 600;
+        letter-spacing: 0.5px;
+      }
+
+      /* Severity Badge Styles */
+      .severity-badge {
+        display: inline-block;
+        font-size: 10px;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        margin-right: 6px;
+      }
+
+      .severity-badge.critical {
+        background: rgba(239, 68, 68, 0.2);
+        color: var(--critical);
+        border: 1px solid var(--critical);
+      }
+
+      .severity-badge.high {
+        background: rgba(249, 115, 22, 0.2);
+        color: var(--high);
+        border: 1px solid var(--high);
+      }
+
+      .severity-badge.medium {
+        background: rgba(234, 179, 8, 0.2);
+        color: var(--medium);
+        border: 1px solid var(--medium);
+      }
+
+      .severity-badge.low {
+        background: rgba(34, 197, 94, 0.2);
+        color: var(--low);
+        border: 1px solid var(--low);
+      }
+
+      /* Toast Notification System */
+      .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 10000;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        max-width: 400px;
+      }
+
+      .toast {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 14px 16px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        animation: slideIn 0.3s ease-out;
+        min-width: 300px;
+      }
+
+      .toast.success { border-left: 4px solid var(--success); }
+      .toast.error { border-left: 4px solid var(--error); }
+      .toast.warning { border-left: 4px solid var(--warning); }
+      .toast.info { border-left: 4px solid var(--info); }
+
+      .toast-icon {
+        font-size: 20px;
+        flex-shrink: 0;
+      }
+
+      .toast-content {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .toast-title {
+        font-weight: 600;
+        margin-bottom: 4px;
+        font-size: 14px;
+      }
+
+      .toast-message {
+        font-size: 13px;
+        color: var(--muted);
+        line-height: 1.4;
+      }
+
+      .toast-close {
+        background: transparent;
+        border: none;
+        color: var(--muted);
+        cursor: pointer;
+        padding: 0;
+        font-size: 18px;
+        line-height: 1;
+        flex-shrink: 0;
+        transition: color 0.15s;
+      }
+
+      .toast-close:hover {
+        color: var(--text);
+      }
+
+      @keyframes slideIn {
+        from {
+          transform: translateX(400px);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+
+      @keyframes slideOut {
+        from {
+          transform: translateX(0);
+          opacity: 1;
+        }
+        to {
+          transform: translateX(400px);
+          opacity: 0;
+        }
+      }
+
+      .toast.removing {
+        animation: slideOut 0.3s ease-in forwards;
+      }
+
+      /* Warning Banner */
+      .warning-banner {
+        background: rgba(234, 179, 8, 0.1);
+        border: 1px solid var(--warning);
+        border-radius: 8px;
+        padding: 10px 12px;
+        margin: 10px 0;
+        font-size: 12px;
+        color: var(--warning);
+        display: none;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .warning-banner.show {
+        display: flex;
+      }
+
+      .warning-banner-icon {
+        font-size: 16px;
+      }
+
+      .suggested {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .suggested button {
+        text-align: left;
+        background: var(--panel-2);
+        border: 1px solid var(--border);
+        color: var(--text);
+        padding: 10px 12px;
+        border-radius: 10px;
+        cursor: pointer;
+        font: inherit;
+        line-height: 1.4;
+        font-size: 13.5px;
+        transition: border-color 0.2s, transform 0.05s, background-color 0.2s;
+      }
+
+      .suggested button:hover {
+        border-color: var(--accent);
+        background: rgba(79, 140, 255, 0.05);
+      }
+
+      .suggested button:active {
+        transform: translateY(1px);
+      }
+
+      .group.modernize .suggested button:hover {
+        border-color: var(--accent-2);
+        background: rgba(110, 231, 183, 0.05);
+      }
+      
+      .group.devops .suggested button:hover {
+        border-color: var(--accent-3);
+        background: rgba(255, 184, 107, 0.05);
+      }
+
+      .repo-form {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 8px;
+      }
+
+      .repo-form input {
+        flex: 1;
+        min-width: 0;
+        padding: 8px 10px;
+        background: var(--panel-2);
+        border: 1px solid var(--border);
+        color: var(--text);
+        border-radius: 8px;
+        font: inherit;
+        font-size: 13px;
+        outline: none;
+      }
+
+      .repo-form input:focus { border-color: var(--accent); }
+
+      .repo-form button {
+        background: var(--accent);
+        color: white;
+        border: 0;
+        padding: 0 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        font: inherit;
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .repo-examples {
+        font-size: 11.5px;
+        color: var(--muted);
+        margin-bottom: 4px;
+      }
+
+      .repo-examples a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      .repo-examples a:hover { text-decoration: underline; }
+
+      /* History Section */
+      .history-section {
+        margin-top: 12px;
+        padding: 12px;
+        background: var(--panel-2);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        max-height: 200px;
+        overflow-y: auto;
+      }
+
+      .history-section h3 {
+        font-size: 11px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin: 0 0 8px;
+      }
+
+      .history-item {
+        padding: 8px;
+        margin-bottom: 6px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        cursor: pointer;
+        transition: border-color 0.15s;
+      }
+
+      .history-item:hover {
+        border-color: var(--accent);
+      }
+
+      .history-item-title {
+        font-size: 12px;
+        color: var(--text);
+        margin-bottom: 4px;
+      }
+
+      .history-item-meta {
+        font-size: 10px;
+        color: var(--muted);
+      }
+
+      .mcp-card {
+        background: var(--panel-2);
+        border: 1px solid var(--border);
+        padding: 12px 14px;
+        border-radius: 10px;
+        font-size: 12.5px;
+        color: var(--muted);
+      }
+
+      .mcp-card code {
+        background: #0a1426;
+        color: var(--accent-2);
+        padding: 1px 6px;
+        border-radius: 4px;
+        font-size: 12px;
+      }
+
+      .mcp-card .tool {
+        display: block;
+        margin-top: 6px;
+      }
+
+      main {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+      }
+
+      .chat {
+        flex: 1;
+        overflow-y: auto;
+        padding: 24px 28px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .empty {
+        margin: auto;
+        max-width: 520px;
+        text-align: center;
+        color: var(--muted);
+      }
+
+      .empty h3 {
+        color: var(--text);
+        margin-bottom: 8px;
+      }
+
+      .msg {
+        display: flex;
+        max-width: 85%;
+      }
+
+      .msg.user {
+        margin-left: auto;
+        justify-content: flex-end;
+      }
+
+      .msg.bot {
+        margin-right: auto;
+      }
+
+      .bubble {
+        padding: 14px 16px;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        white-space: pre-wrap;
+        word-wrap: break-word;
+      }
+
+      .msg.user .bubble {
+        background: var(--user-bubble);
+        border-color: #2b4a85;
+        border-bottom-right-radius: 4px;
+      }
+
+      .msg.bot .bubble {
+        background: var(--bot-bubble);
+        border-bottom-left-radius: 4px;
+      }
+
+      .bubble .mode-tag {
+        display: inline-block;
+        font-size: 10px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        padding: 2px 8px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        color: var(--muted);
+        margin-bottom: 8px;
+      }
+
+      .bubble .mode-tag.compliance { color: var(--accent); border-color: var(--accent); }
+      .bubble .mode-tag.modernize { color: var(--accent-2); border-color: var(--accent-2); }
+
+      .bubble strong { color: var(--accent-2); }
+
+      .bubble .actions {
+        margin-top: 12px;
+        padding-top: 10px;
+        border-top: 1px dashed var(--border);
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .bubble .actions button {
+        background: transparent;
+        color: var(--accent);
+        border: 1px solid var(--accent);
+        padding: 6px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        font: inherit;
+        font-size: 12px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .bubble .actions button:hover {
+        background: rgba(79, 140, 255, 0.1);
+      }
+
+      .bubble .actions button.modernize-btn {
+        color: var(--accent-2);
+        border-color: var(--accent-2);
+      }
+
+      .bubble .actions button.modernize-btn:hover {
+        background: rgba(110, 231, 183, 0.1);
+      }
+
+      .bubble .actions button:disabled {
+        opacity: 0.5;
+        cursor: wait;
+      }
+
+      .spinner-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .spinner {
+        width: 14px;
+        height: 14px;
+        border: 2px solid var(--border);
+        border-top-color: var(--accent);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      form.composer {
+        display: flex;
+        gap: 10px;
+        padding: 16px 28px 24px;
+        border-top: 1px solid var(--border);
+        background: var(--panel);
+      }
+
+      form.composer textarea {
+        flex: 1;
+        resize: none;
+        min-height: 46px;
+        max-height: 160px;
+        padding: 12px 14px;
+        background: var(--panel-2);
+        border: 1px solid var(--border);
+        color: var(--text);
+        font: inherit;
+        border-radius: 10px;
+        outline: none;
+      }
+
+      form.composer textarea:focus {
+        border-color: var(--accent);
+      }
+
+      form.composer button {
+        background: var(--accent);
+        color: white;
+        border: 0;
+        padding: 0 20px;
+        border-radius: 10px;
+        cursor: pointer;
+        font: inherit;
+        font-weight: 600;
+        min-width: 110px;
+      }
+
+      form.composer button:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+      }
+
+      /* Chat header styles */
+      .chat-header {
+        padding: 12px 28px;
+        border-bottom: 1px solid var(--border);
+        background: var(--panel);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .chat-header h2 {
+        font-size: 14px;
+        margin: 0;
+        color: var(--text);
+        font-weight: 600;
+      }
+
+      .chat-header-actions {
+        display: flex;
+        gap: 8px;
+      }
+
+      .chat-header-actions button {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--muted);
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        font: inherit;
+        font-size: 12px;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .chat-header-actions button:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+        background: rgba(79, 140, 255, 0.05);
+      }
+
+      /* Loading skeleton */
+      .skeleton {
+        background: linear-gradient(
+          90deg,
+          var(--panel-2) 25%,
+          var(--panel) 50%,
+          var(--panel-2) 75%
+        );
+        background-size: 200% 100%;
+        animation: loading 1.5s ease-in-out infinite;
+        border-radius: 8px;
+      }
+
+      @keyframes loading {
+        0% {
+          background-position: 200% 0;
+        }
+        100% {
+          background-position: -200% 0;
+        }
+      }
+
+      /* Character counter */
+      .composer-wrapper {
+        position: relative;
+      }
+
+      .char-counter {
+        position: absolute;
+        bottom: 32px;
+        right: 140px;
+        font-size: 11px;
+        color: var(--muted);
+        pointer-events: none;
+      }
+
+      .char-counter.warning {
+        color: var(--warning);
+      }
+
+      .char-counter.error {
+        color: var(--error);
+      }
+
+      @media (max-width: 760px) {
+        .layout {
+          grid-template-columns: 1fr;
+          height: auto;
+        }
+
+        aside {
+          border-right: 0;
+          border-bottom: 1px solid var(--border);
+          max-height: 400px;
+        }
+
+        .chat-header {
+          padding: 10px 16px;
+        }
+
+        .chat-header h2 {
+          font-size: 13px;
+        }
+
+        .chat-header-actions button {
+          padding: 5px 10px;
+          font-size: 11px;
+        }
+
+        .chat {
+          min-height: 50vh;
+          padding: 16px;
+        }
+
+        form.composer {
+          padding: 12px 16px 16px;
+        }
+
+        .msg {
+          max-width: 100%;
+        }
+
+        .toast-container {
+          top: 10px;
+          right: 10px;
+          left: 10px;
+          max-width: none;
+        }
+
+        .toast {
+          min-width: auto;
+        }
+
+        .char-counter {
+          bottom: 28px;
+          right: 120px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer" role="region" aria-live="polite" aria-label="Notifications"></div>
+
+    <header>
+      <h1>Compliance Assistant</h1>
+      <p class="tagline">Enterprise Audit Platform for Regulatory Compliance — PCI-DSS, GDPR, HIPAA, SOC 2, ISO 27001</p>
+      <div class="pillars">
+        <span class="pillar active">Compliance Auditing</span>
+        <span class="pillar active">Legacy System Assessment</span>
+        <span class="pillar active">DevOps Integration</span>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside>
+        <div class="group compliance">
+          <h2><span class="dot"></span> Compliance Auditing</h2>
+          <p class="blurb">Audit any public repository or bundled sample systems for regulatory compliance.</p>
+
+          <!-- Warning Banner for No Frameworks -->
+          <div class="warning-banner" id="frameworkWarning">
+            <span class="warning-banner-icon">⚠️</span>
+            <span>Please select at least one compliance framework</span>
+          </div>
+
+          <!-- Framework Selector -->
+          <div class="framework-selector">
+            <h3>Compliance Frameworks</h3>
+            <div class="framework-options">
+              <div class="framework-option">
+                <input type="checkbox" id="fw-pci" value="PCI-DSS" checked aria-label="PCI-DSS compliance framework">
+                <label for="fw-pci">PCI-DSS (Payment Card Industry)</label>
+              </div>
+              <div class="framework-option">
+                <input type="checkbox" id="fw-gdpr" value="GDPR" checked aria-label="GDPR compliance framework">
+                <label for="fw-gdpr">GDPR (Data Protection)</label>
+              </div>
+              <div class="framework-option">
+                <input type="checkbox" id="fw-hipaa" value="HIPAA" checked aria-label="HIPAA compliance framework">
+                <label for="fw-hipaa">HIPAA (Healthcare)</label>
+              </div>
+              <div class="framework-option">
+                <input type="checkbox" id="fw-soc2" value="SOC 2" aria-label="SOC 2 compliance framework">
+                <label for="fw-soc2">SOC 2 (Service Organization)</label>
+              </div>
+              <div class="framework-option">
+                <input type="checkbox" id="fw-iso" value="ISO 27001" aria-label="ISO 27001 compliance framework">
+                <label for="fw-iso">ISO 27001 (Information Security)</label>
+              </div>
+            </div>
+          </div>
+
+          <form id="repoForm" class="repo-form" aria-label="GitHub repository audit form">
+            <input
+              type="text"
+              id="repoUrl"
+              placeholder="github.com/owner/repo"
+              autocomplete="off"
+              aria-label="GitHub repository URL"
+            />
+            <button type="submit" aria-label="Audit repository">Audit Repository</button>
+          </form>
+          <div class="repo-examples">
+            Examples:
+            <a href="#" data-repo="expressjs/express">expressjs/express</a> ·
+            <a href="#" data-repo="vercel/ms">vercel/ms</a>
+          </div>
+
+          <div class="suggested" data-mode="ask" style="margin-top:12px;">
+            <button type="button">Is our payment processing PCI-DSS compliant?</button>
+            <button type="button">Are we handling personal data according to GDPR requirements?</button>
+            <button type="button">Are there any exposed credentials or API keys?</button>
+            <button type="button">What are our highest-priority compliance risks?</button>
+          </div>
+
+          <!-- Audit History -->
+          <div class="history-section" id="historySection" style="display:none;">
+            <h3>Recent Audits</h3>
+            <div id="historyList" role="list"></div>
+            <div class="history-controls">
+              <button type="button" id="clearHistoryBtn" aria-label="Clear all audit history">🗑️ Clear All</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="group modernize">
+          <h2><span class="dot"></span> Legacy System Assessment</h2>
+          <p class="blurb">Assess legacy and undocumented systems for modernization planning.</p>
+          <div class="suggested" data-mode="modernize">
+            <button type="button" data-file="legacy-payroll.cobol.txt">
+              Assess COBOL Payroll System (legacy-payroll.cobol.txt)
+            </button>
+            <button type="button" data-file="batch-job.js">
+              Assess Undocumented Batch Process (batch-job.js)
+            </button>
+          </div>
+        </div>
+
+        <div class="group devops">
+          <h2><span class="dot"></span> DevOps Integration</h2>
+          <p class="blurb">Integrate compliance scanning into your CI/CD pipeline via MCP protocol.</p>
+          <div class="mcp-card">
+            Run <code>node mcp-server.js</code> over stdio. Available tools:
+            <span class="tool">• <code>ask_compliance</code></span>
+            <span class="tool">• <code>scan_github_repo</code></span>
+            <span class="tool">• <code>modernize_file</code></span>
+            <span class="tool">• <code>list_codebase_files</code></span>
+            <span class="tool">• <code>get_codebase_file</code></span>
+          </div>
+        </div>
+      </aside>
+
+      <main>
+        <div class="chat-header">
+          <h2>Audit Conversation</h2>
+          <div class="chat-header-actions">
+            <button type="button" id="clearChatBtn" aria-label="Clear chat conversation">
+              🗑️ Clear Chat
+            </button>
+          </div>
+        </div>
+        
+        <div class="chat" id="chat" role="log" aria-live="polite" aria-label="Audit conversation">
+          <div class="empty" id="empty">
+            <h3>Professional Compliance Auditing Platform</h3>
+            <p>
+              Select an audit question or enter your own compliance query below.
+              Results include <strong>severity ratings</strong>, <strong>framework mappings</strong>,
+              and <strong>audit-ready PDF reports</strong> for management review.
+            </p>
+          </div>
+        </div>
+
+        <div class="composer-wrapper">
+          <form class="composer" id="composer" aria-label="Audit query form">
+            <textarea
+              id="question"
+              placeholder="Ask about PCI-DSS, GDPR, HIPAA, SOC 2, ISO 27001 compliance, or type 'assess <filename>' for legacy systems…"
+              rows="1"
+              required
+              aria-label="Audit query input"
+              maxlength="2000"
+            ></textarea>
+            <span class="char-counter" id="charCounter" aria-live="polite"></span>
+            <button type="submit" id="sendBtn" aria-label="Submit audit query">Submit Audit</button>
+          </form>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      // ============================================================================
+      // GLOBAL STATE AND DOM REFERENCES
+      // ============================================================================
+      const chat = document.getElementById('chat');
+      const empty = document.getElementById('empty');
+      const form = document.getElementById('composer');
+      const ta = document.getElementById('question');
+      const sendBtn = document.getElementById('sendBtn');
+      const historySection = document.getElementById('historySection');
+      const historyList = document.getElementById('historyList');
+      const toastContainer = document.getElementById('toastContainer');
+      const clearChatBtn = document.getElementById('clearChatBtn');
+      const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+      const charCounter = document.getElementById('charCounter');      const frameworkWarning = document.getElementById('frameworkWarning');
+
+      // Constants
+      const MAX_HISTORY_ITEMS = 10;
+      const MAX_CHAR_COUNT = 2000;
+      const DEBOUNCE_DELAY = 300;
+      const TOAST_DURATION = 5000;
+
+      // Audit history management with size limits
+      let auditHistory = [];
+      try {
+        const stored = localStorage.getItem('auditHistory');
+        if (stored) {
+          auditHistory = JSON.parse(stored);
+          // Validate and limit size
+          if (!Array.isArray(auditHistory)) auditHistory = [];
+          auditHistory = auditHistory.slice(0, MAX_HISTORY_ITEMS);
+        }
+      } catch (e) {
+        console.error('Failed to load audit history:', e);
+        auditHistory = [];
+      }
+
+      // ============================================================================
+      // UTILITY FUNCTIONS
+      // ============================================================================
+
+      /**
+       * Properly escape HTML to prevent XSS attacks
+       * SECURITY FIX: Correct order of replacements
+       */
+      function escapeHtml(str) {
+        if (typeof str !== 'string') return '';
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+      }
+
+      /**
+       * Validate GitHub URL format
+       */
+      function isValidGitHubUrl(url) {
+        if (!url || typeof url !== 'string') return false;
+        const trimmed = url.trim();
+        // Allow short format: owner/repo
+        if (/^[\w.-]+\/[\w.-]+$/.test(trimmed)) return true;
+        // Allow full URLs
+        try {
+          const parsed = new URL(trimmed.startsWith('http') ? trimmed : 'https://' + trimmed);
+          return parsed.hostname.toLowerCase().includes('github.com');
+        } catch {
+          return false;
+        }
+      }
+
+      /**
+       * Sanitize input to prevent injection attacks
+       */
+      function sanitizeInput(input) {
+        if (typeof input !== 'string') return '';
+        return input.trim().slice(0, MAX_CHAR_COUNT);
+      }
+
+      /**
+       * Debounce function for performance
+       */
+      function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+          const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+          };
+          clearTimeout(timeout);
+          timeout = setTimeout(later, wait);
+        };
+      }
+
+      // ============================================================================
+      // TOAST NOTIFICATION SYSTEM
+      // ============================================================================
+
+      /**
+       * Show toast notification
+       * @param {string} message - The message to display
+       * @param {string} type - Type: 'success', 'error', 'warning', 'info'
+       * @param {string} title - Optional title
+       */
+      function showToast(message, type = 'info', title = '') {
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.setAttribute('role', 'alert');
+        
+        const icons = {
+          success: '✓',
+          error: '✗',
+          warning: '⚠',
+          info: 'ℹ'
+        };
+
+        const titles = {
+          success: title || 'Success',
+          error: title || 'Error',
+          warning: title || 'Warning',
+          info: title || 'Info'
+        };
+
+        toast.innerHTML = `
+          <span class="toast-icon">${icons[type] || icons.info}</span>
+          <div class="toast-content">
+            <div class="toast-title">${escapeHtml(titles[type])}</div>
+            <div class="toast-message">${escapeHtml(message)}</div>
+          </div>
+          <button class="toast-close" aria-label="Close notification">×</button>
+        `;
+
+        const closeBtn = toast.querySelector('.toast-close');
+        closeBtn.addEventListener('click', () => removeToast(toast));
+
+        toastContainer.appendChild(toast);
+
+        // Auto-remove after duration
+        setTimeout(() => removeToast(toast), TOAST_DURATION);
+      }
+
+      function removeToast(toast) {
+        if (!toast || !toast.parentNode) return;
+        toast.classList.add('removing');
+        setTimeout(() => {
+          if (toast.parentNode) toast.parentNode.removeChild(toast);
+        }, 300);
+      }
+
+      // ============================================================================
+      // GLOBAL ERROR HANDLING
+      // ============================================================================
+
+      window.addEventListener('error', (event) => {
+        console.error('Global error:', event.error);
+        showToast('An unexpected error occurred. Please refresh the page.', 'error');
+      });
+
+      window.addEventListener('unhandledrejection', (event) => {
+        console.error('Unhandled promise rejection:', event.reason);
+        showToast('A network or processing error occurred. Please try again.', 'error');
+      });
+
+      // ============================================================================
+      // FRAMEWORK SELECTION MANAGEMENT
+      // ============================================================================
+
+      function getSelectedFrameworks() {
+        const checkboxes = document.querySelectorAll('.framework-option input[type="checkbox"]:checked');
+        return Array.from(checkboxes).map(cb => cb.value);
+      }
+
+      function updateFrameworkWarning() {
+        const selected = getSelectedFrameworks();
+        if (selected.length === 0) {
+          frameworkWarning.classList.add('show');
+        } else {
+          frameworkWarning.classList.remove('show');
+        }
+      }
+
+      // Listen to framework changes
+      document.querySelectorAll('.framework-option input[type="checkbox"]').forEach(cb => {
+        cb.addEventListener('change', updateFrameworkWarning);
+      });
+
+      updateFrameworkWarning();
+
+      // ============================================================================
+      // AUDIT HISTORY MANAGEMENT
+      // ============================================================================
+
+      function saveToHistory(entry) {
+        try {
+          auditHistory.unshift({
+            ...entry,
+            timestamp: new Date().toISOString(),
+            id: Date.now()
+          });
+          
+          // Limit history size
+          if (auditHistory.length > MAX_HISTORY_ITEMS) {
+            auditHistory = auditHistory.slice(0, MAX_HISTORY_ITEMS);
+          }
+          
+          // Check localStorage size (approximate)
+          const serialized = JSON.stringify(auditHistory);
+          if (serialized.length > 500000) { // ~500KB limit
+            auditHistory = auditHistory.slice(0, 5); // Keep only 5 most recent
+            showToast('History size limit reached. Older entries removed.', 'warning');
+          }
+          
+          localStorage.setItem('auditHistory', serialized);
+          renderHistory();
+        } catch (e) {
+          console.error('Failed to save history:', e);
+          showToast('Could not save to history. Storage may be full.', 'warning');
+        }
+      }
+
+      function renderHistory() {
+        if (auditHistory.length === 0) {
+          historySection.style.display = 'none';
+          return;
+        }
+        
+        historySection.style.display = 'block';
+        historyList.innerHTML = auditHistory.map(item => `
+          <div class="history-item" data-id="${item.id}" role="listitem" tabindex="0">
+            <div class="history-item-title">${escapeHtml(item.title || item.question || 'Audit')}</div>
+            <div class="history-item-meta">${new Date(item.timestamp).toLocaleString()}</div>
+          </div>
+        `).join('');
+
+        historyList.querySelectorAll('.history-item').forEach(el => {
+          const clickHandler = () => {
+            const id = parseInt(el.dataset.id);
+            const item = auditHistory.find(h => h.id === id);
+            if (item) {
+              addMessage('user', item.question || 'Previous audit');
+              addMessage('bot', item.answer || 'No answer available', item.kind || 'compliance', item);
+              showToast('Loaded previous audit from history', 'success');
+            }
+          };
+          
+          el.addEventListener('click', clickHandler);
+          el.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              clickHandler();
+            }
+          });
+        });
+      }
+
+      function clearHistory() {
+        if (auditHistory.length === 0) {
+          showToast('History is already empty', 'info');
+          return;
+        }
+        
+        if (confirm('Are you sure you want to clear all audit history? This cannot be undone.')) {
+          auditHistory = [];
+          localStorage.removeItem('auditHistory');
+          renderHistory();
+          showToast('Audit history cleared successfully', 'success');
+        }
+      }
+
+      renderHistory();
+      clearHistoryBtn.addEventListener('click', clearHistory);
+
+      // ============================================================================
+      // CHARACTER COUNTER
+      // ============================================================================
+
+      function updateCharCounter() {
+        const length = ta.value.length;
+        const remaining = MAX_CHAR_COUNT - length;
+        
+        if (remaining < 0) {
+          charCounter.textContent = `${Math.abs(remaining)} characters over limit`;
+          charCounter.className = 'char-counter error';
+        } else if (remaining < 100) {
+          charCounter.textContent = `${remaining} characters remaining`;
+          charCounter.className = 'char-counter warning';
+        } else if (length > 0) {
+          charCounter.textContent = `${length} / ${MAX_CHAR_COUNT}`;
+          charCounter.className = 'char-counter';
+        } else {
+          charCounter.textContent = '';
+          charCounter.className = 'char-counter';
+        }
+      }
+
+      ta.addEventListener('input', debounce(updateCharCounter, 100));
+
+      // ============================================================================
+      // MESSAGE RENDERING
+      // ============================================================================
+
+      function renderMarkdown(text) {
+        let html = escapeHtml(text);
+        html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+        html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+        html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+        html = html.replace(/\n/g, '<br/>');
+        return html;
+      }
+
+      function clearEmpty() {
+        if (empty && empty.parentNode) empty.parentNode.removeChild(empty);
+      }
+
+      function clearChat() {
+        if (confirm('Are you sure you want to clear the current conversation?')) {
+          chat.innerHTML = '';
+          chat.appendChild(empty);
+          showToast('Chat cleared successfully', 'success');
+        }
+      }
+
+      clearChatBtn.addEventListener('click', clearChat);
+
+      function addMessage(role, text, mode, pdfContext) {
+        clearEmpty();
+        const wrap = document.createElement('div');
+        wrap.className = 'msg ' + role;
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble';
+        let html = role === 'bot' ? renderMarkdown(text) : escapeHtml(text);
+        if (role === 'bot' && mode) {
+          const tag =
+            mode === 'modernize'
+              ? '<span class="mode-tag modernize">Legacy Assessment</span><br/>'
+              : '<span class="mode-tag compliance">Compliance Audit</span><br/>';
+          html = tag + html;
+        }
+        bubble.innerHTML = html;
+
+        if (role === 'bot' && pdfContext && pdfContext.answer) {
+          const actions = document.createElement('div');
+          actions.className = 'actions';
+          const dl = document.createElement('button');
+          dl.type = 'button';
+          if (mode === 'modernize') dl.classList.add('modernize-btn');
+          dl.innerHTML = '📄 Generate Audit Report (PDF)';
+          dl.addEventListener('click', () => downloadReport(dl, pdfContext));
+          actions.appendChild(dl);
+          bubble.appendChild(actions);
+        }
+
+        wrap.appendChild(bubble);
+        chat.appendChild(wrap);
+        chat.scrollTop = chat.scrollHeight;
+        return bubble;
+      }
+
+      /**
+       * Download PDF audit report
+       */
+      async function downloadReport(btn, ctx) {
+        const original = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '⏳ Generating audit report…';
+        
+        try {
+          const res = await fetch('/report', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              ...ctx,
+              frameworks: getSelectedFrameworks()
+            }),
+          });
+          
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error || 'Report generation failed');
+          }
+          
+          const blob = await res.blob();
+          const disposition = res.headers.get('Content-Disposition') || '';
+          const m = disposition.match(/filename="([^"]+)"/);
+          const filename = m ? m[1] : 'compliance-audit-report.pdf';
+          
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          
+          btn.innerHTML = '✓ Report Downloaded';
+          showToast(`Report "${filename}" downloaded successfully`, 'success');
+          
+          setTimeout(() => {
+            btn.innerHTML = original;
+            btn.disabled = false;
+          }, 1800);
+        } catch (err) {
+          console.error('Report download failed:', err);
+          btn.innerHTML = '✗ Failed';
+          showToast('Failed to generate report. Please try again.', 'error');
+          
+          setTimeout(() => {
+            btn.innerHTML = original;
+            btn.disabled = false;
+          }, 2500);
+        }
+      }
+
+      function addSpinner(label) {
+        clearEmpty();
+        const wrap = document.createElement('div');
+        wrap.className = 'msg bot';
+        wrap.id = 'pending';
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble';
+        bubble.innerHTML =
+          '<div class="spinner-row"><div class="spinner"></div><span>' +
+          escapeHtml(label) +
+          '</span></div>';
+        wrap.appendChild(bubble);
+        chat.appendChild(wrap);
+        chat.scrollTop = chat.scrollHeight;
+      }
+
+      function removeSpinner() {
+        const p = document.getElementById('pending');
+        if (p && p.parentNode) p.parentNode.removeChild(p);
+      }
+
+      // ============================================================================
+      // API COMMUNICATION
+      // ============================================================================
+
+      /**
+       * Make POST request with better error handling
+       */
+      async function postJson(url, payload) {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        
+        if (!res.ok) {
+          const errorData = await res.json().catch(() => ({}));
+          throw new Error(errorData.answer || errorData.error || `Server error: ${res.status}`);
+        }
+        
+        return res.json().catch(() => ({
+          answer: 'The server returned an unexpected response.',
+        }));
+      }
+
+      /**
+       * Ask compliance question about bundled samples
+       */
+      async function ask(question) {
+        const sanitized = sanitizeInput(question);
+        if (!sanitized) {
+          showToast('Please enter a valid question', 'warning');
+          return;
+        }
+
+        const frameworks = getSelectedFrameworks();
+        if (frameworks.length === 0) {
+          showToast('Please select at least one compliance framework', 'warning');
+          return;
+        }
+
+        addMessage('user', sanitized);
+        addSpinner('Conducting compliance audit…');
+        sendBtn.disabled = true;
+        
+        try {
+          const data = await postJson('/ask', { question: sanitized, frameworks });
+          removeSpinner();
+          
+          const ctx = data.answer
+            ? {
+                kind: 'compliance',
+                question: sanitized,
+                answer: data.answer,
+                filesScanned: data.filesScanned,
+                frameworks
+              }
+            : null;
+            
+          addMessage('bot', data.answer || 'No findings returned.', 'compliance', ctx);
+          
+          if (ctx) {
+            saveToHistory({
+              title: 'Bundled Sample Audit',
+              question: sanitized,
+              answer: data.answer,
+              kind: 'compliance',
+              filesScanned: data.filesScanned,
+              frameworks
+            });
+            showToast('Audit completed successfully', 'success');
+          }
+        } catch (err) {
+          console.error('Audit failed:', err);
+          removeSpinner();
+          const userMessage = err.message.includes('not configured')
+            ? err.message
+            : 'Unable to complete audit. Please check your connection and try again.';
+          addMessage('bot', userMessage);
+          showToast('Audit failed', 'error');
+        } finally {
+          sendBtn.disabled = false;
+          ta.focus();
+        }
+      }
+
+      /**
+       * Scan GitHub repository
+       */
+      async function scanRepo(url, question) {
+        const sanitizedUrl = sanitizeInput(url);
+        if (!sanitizedUrl || !isValidGitHubUrl(sanitizedUrl)) {
+          showToast('Please enter a valid GitHub repository URL', 'error');
+          return;
+        }
+
+        const frameworks = getSelectedFrameworks();
+        if (frameworks.length === 0) {
+          showToast('Please select at least one compliance framework', 'warning');
+          return;
+        }
+
+        addMessage('user', 'Audit repository: ' + sanitizedUrl);
+        addSpinner('Retrieving repository from GitHub and conducting audit…');
+        sendBtn.disabled = true;
+        
+        try {
+          const data = await postJson('/scan-repo', {
+            url: sanitizedUrl,
+            question: question ? sanitizeInput(question) : '',
+            frameworks
+          });
+          removeSpinner();
+          
+          let text = data.answer || 'No findings returned.';
+          if (data.repo && data.filesScanned) {
+            text =
+              '**Repository:** ' +
+              data.repo +
+              '@' +
+              (data.branch || '?') +
+              '\n**Systems Reviewed (' +
+              data.filesScanned.length +
+              '):** ' +
+              data.filesScanned.join(', ') +
+              '\n\n' +
+              text;
+          }
+          
+          const ctx = data.answer && data.repo
+            ? {
+                kind: 'compliance',
+                question: question || '(comprehensive audit)',
+                answer: data.answer,
+                repo: data.repo,
+                branch: data.branch,
+                filesScanned: data.filesScanned,
+                frameworks
+              }
+            : null;
+            
+          addMessage('bot', text, 'compliance', ctx);
+          
+          if (ctx) {
+            saveToHistory({
+              title: `Repository: ${data.repo}`,
+              question: question || 'Comprehensive audit',
+              answer: data.answer,
+              kind: 'compliance',
+              repo: data.repo,
+              branch: data.branch,
+              filesScanned: data.filesScanned,
+              frameworks
+            });
+            showToast(`Repository ${data.repo} audited successfully`, 'success');
+          }
+        } catch (err) {
+          console.error('Repository scan failed:', err);
+          removeSpinner();
+          const userMessage = err.message.includes('not found')
+            ? 'Repository not found. Please check the URL and ensure it\'s public.'
+            : err.message.includes('rate-limited')
+            ? 'GitHub rate limit reached. Please wait an hour or configure a GitHub token.'
+            : 'Unable to scan repository. Please check the URL and try again.';
+          addMessage('bot', userMessage);
+          showToast('Repository scan failed', 'error');
+        } finally {
+          sendBtn.disabled = false;
+        }
+      }
+
+      /**
+       * Modernize legacy file
+       */
+      async function modernize(filename, question) {
+        const sanitizedFilename = sanitizeInput(filename);
+        if (!sanitizedFilename) {
+          showToast('Please specify a valid filename', 'warning');
+          return;
+        }
+
+        const userText = question
+          ? `Assess ${sanitizedFilename}: ${sanitizeInput(question)}`
+          : `Assess legacy system: ${sanitizedFilename}`;
+          
+        addMessage('user', userText);
+        addSpinner('Analyzing legacy system ' + sanitizedFilename + '…');
+        sendBtn.disabled = true;
+        
+        try {
+          const data = await postJson('/modernize', {
+            filename: sanitizedFilename,
+            question: question ? sanitizeInput(question) : ''
+          });
+          removeSpinner();
+          
+          const ctx = data.answer && data.filename
+            ? {
+                kind: 'modernize',
+                question: question || '(comprehensive assessment)',
+                answer: data.answer,
+                filename: data.filename,
+                filesScanned: [data.filename],
+              }
+            : null;
+            
+          addMessage('bot', data.answer || 'No assessment returned.', 'modernize', ctx);
+          
+          if (ctx) {
+            saveToHistory({
+              title: `Legacy System: ${data.filename}`,
+              question: question || 'Comprehensive assessment',
+              answer: data.answer,
+              kind: 'modernize',
+              filename: data.filename
+            });
+            showToast(`Legacy system ${data.filename} assessed successfully`, 'success');
+          }
+        } catch (err) {
+          console.error('Modernization failed:', err);
+          removeSpinner();
+          const userMessage = err.message.includes('not found')
+            ? 'File not found. Please check the filename and try again.'
+            : 'Unable to assess legacy system. Please try again.';
+          addMessage('bot', userMessage);
+          showToast('Assessment failed', 'error');
+        } finally {
+          sendBtn.disabled = false;
+          ta.focus();
+        }
+      }
+
+      // ============================================================================
+      // EVENT HANDLERS
+      // ============================================================================
+
+      /**
+       * Handle suggested question clicks
+       */
+      function handleSuggested(e) {
+        const btn = e.target.closest('button');
+        if (!btn) return;
+        const group = btn.closest('.suggested');
+        const mode = group && group.dataset.mode;
+        
+        if (mode === 'modernize') {
+          const file = btn.dataset.file;
+          if (file) {
+            modernize(file);
+          }
+        } else {
+          const question = btn.textContent.trim();
+          if (question) {
+            ask(question);
+          }
+        }
+      }
+
+      // Attach suggested question handlers
+      document
+        .querySelectorAll('.suggested')
+        .forEach((g) => g.addEventListener('click', handleSuggested));
+
+      // Repository form submission
+      const repoForm = document.getElementById('repoForm');
+      const repoInput = document.getElementById('repoUrl');
+      
+      repoForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const url = repoInput.value.trim();
+        
+        if (!url) {
+          showToast('Please enter a repository URL', 'warning');
+          repoInput.focus();
+          return;
+        }
+        
+        if (!isValidGitHubUrl(url)) {
+          showToast('Please enter a valid GitHub repository URL', 'error');
+          repoInput.focus();
+          return;
+        }
+        
+        scanRepo(url);
+        repoInput.value = ''; // Clear after submission
+      });
+
+      // Repository example links
+      document.querySelectorAll('.repo-examples a').forEach((a) => {
+        a.addEventListener('click', (e) => {
+          e.preventDefault();
+          const url = a.dataset.repo;
+          if (url) {
+            repoInput.value = url;
+            scanRepo(url);
+          }
+        });
+      });
+
+      // Main form submission
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const query = ta.value.trim();
+        
+        if (!query) {
+          showToast('Please enter a question or command', 'warning');
+          ta.focus();
+          return;
+        }
+        
+        if (query.length > MAX_CHAR_COUNT) {
+          showToast(`Question exceeds maximum length of ${MAX_CHAR_COUNT} characters`, 'error');
+          return;
+        }
+        
+        ta.value = '';
+        updateCharCounter();
+        
+        // Check for modernize/assess command
+        const modernizeMatch = query.match(/^(?:modernize|assess)\s+([^\s:]+)(?:\s*[:\-]\s*(.*))?$/i);
+        if (modernizeMatch) {
+          modernize(modernizeMatch[1], (modernizeMatch[2] || '').trim());
+        } else {
+          ask(query);
+        }
+      });
+
+      // Keyboard shortcuts
+      ta.addEventListener('keydown', (e) => {
+        // Submit on Enter (without Shift)
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          form.requestSubmit();
+        }
+        
+        // Clear on Escape
+        if (e.key === 'Escape') {
+          ta.value = '';
+          updateCharCounter();
+        }
+      });
+
+      // Auto-resize textarea
+      ta.addEventListener('input', () => {
+        ta.style.height = 'auto';
+        ta.style.height = Math.min(ta.scrollHeight, 160) + 'px';
+      });
+
+      // ============================================================================
+      // INITIALIZATION
+      // ============================================================================
+
+      // Show welcome message in console
+      console.log('%c🔒 Compliance Assistant', 'font-size: 20px; font-weight: bold; color: #4f8cff;');
+      console.log('%cEnterprise Audit Platform for Regulatory Compliance', 'font-size: 12px; color: #8a9bb8;');
+      console.log('%cVersion 2.0 - Enhanced Security & Accessibility', 'font-size: 11px; color: #6ee7b7;');
+      
+      // Focus on input
+      ta.focus();
+      
+      // Show initial toast if no frameworks selected (shouldn't happen with defaults)
+      if (getSelectedFrameworks().length === 0) {
+        showToast('Please select at least one compliance framework to begin', 'info');
+      }
+    </script>
+  </body>
+</html>
