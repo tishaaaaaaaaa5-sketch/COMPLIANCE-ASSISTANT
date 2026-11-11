@@ -27,7 +27,7 @@ npm run test:coverage -- --runInBand
 
 ## Verified GitHub Actions run
 
-<badge>CI passed</badge>
+**CI status: passed**
 
 - Workflow run: [#3 — Compliance Assistant tests](https://github.com/tishaaaaaaaaa5-sketch/COMPLIANCE-ASSISTANT/actions/runs/43122334444)
 - Commit: `234b1be37da4442db5c3c3e00f92b6f7edc342b2`
