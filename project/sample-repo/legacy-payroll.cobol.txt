@@ -1,0 +1,53 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. PAYRL01.
+      *  ORIGINAL AUTHOR UNKNOWN, LAST TOUCHED 1997
+      *  NO DOCUMENTATION ON FILE
+       ENVIRONMENT DIVISION.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT EMP-FILE ASSIGN TO 'EMPMAST'
+               ORGANIZATION IS INDEXED
+               ACCESS MODE IS DYNAMIC
+               RECORD KEY IS EMP-ID.
+           SELECT PAY-FILE ASSIGN TO 'PAYOUT'
+               ORGANIZATION IS SEQUENTIAL.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  EMP-FILE.
+       01  EMP-REC.
+           05  EMP-ID         PIC X(09).
+           05  EMP-NAME       PIC X(30).
+           05  EMP-SSN        PIC X(09).
+           05  EMP-RATE       PIC 9(05)V99.
+           05  EMP-HRS        PIC 9(03)V99.
+           05  EMP-STATUS     PIC X(01).
+       FD  PAY-FILE.
+       01  PAY-REC            PIC X(120).
+       WORKING-STORAGE SECTION.
+       01  WS-GROSS           PIC 9(07)V99 VALUE ZERO.
+       01  WS-TAX             PIC 9(07)V99 VALUE ZERO.
+       01  WS-NET             PIC 9(07)V99 VALUE ZERO.
+       01  WS-OT              PIC 9(07)V99 VALUE ZERO.
+       01  WS-EOF             PIC X VALUE 'N'.
+       PROCEDURE DIVISION.
+       MAIN-PARA.
+           OPEN INPUT EMP-FILE OUTPUT PAY-FILE.
+           PERFORM READ-PARA UNTIL WS-EOF = 'Y'.
+           CLOSE EMP-FILE PAY-FILE.
+           STOP RUN.
+       READ-PARA.
+           READ EMP-FILE NEXT RECORD
+               AT END MOVE 'Y' TO WS-EOF
+               NOT AT END PERFORM CALC-PARA.
+       CALC-PARA.
+           IF EMP-HRS > 40
+               COMPUTE WS-OT = (EMP-HRS - 40) * EMP-RATE * 1.5
+               COMPUTE WS-GROSS = (40 * EMP-RATE) + WS-OT
+           ELSE
+               COMPUTE WS-GROSS = EMP-HRS * EMP-RATE
+           END-IF.
+           COMPUTE WS-TAX = WS-GROSS * 0.22.
+           COMPUTE WS-NET = WS-GROSS - WS-TAX.
+           DISPLAY EMP-ID ' ' EMP-NAME ' ' EMP-SSN
+                   ' GROSS=' WS-GROSS ' NET=' WS-NET.
+           WRITE PAY-REC FROM EMP-REC.
