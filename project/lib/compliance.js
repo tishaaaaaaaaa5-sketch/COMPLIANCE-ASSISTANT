@@ -176,7 +176,16 @@ export function parseGithubUrl(input) {
     if (parts[2] === 'tree' && parts[3]) ref = parts[3];
   }
 
-  if (!owner || !repo) throw new Error('Could not parse owner/repo from URL.');
+  // Only accept GitHub path components. This prevents shell metacharacters,
+  // whitespace, query fragments, and other URL payloads from being treated as
+  // repository identifiers and later interpolated into API paths.
+  const safeSegment = /^[A-Za-z0-9][A-Za-z0-9._-]*$/;
+  if (!owner || !repo || !safeSegment.test(owner) || !safeSegment.test(repo)) {
+    throw new Error('GitHub owner and repository names contain invalid characters.');
+  }
+  if (owner === '.' || owner === '..' || repo === '.' || repo === '..') {
+    throw new Error('Invalid GitHub repository path.');
+  }
   return { owner, repo, ref };
 }
 
