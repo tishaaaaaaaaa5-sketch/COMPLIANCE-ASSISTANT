@@ -140,6 +140,13 @@ app.post('/report', async (req, res) => {
   }
 });
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Compliance Assistant listening on port ${PORT}`);
-});
+export { app };
+export default app;
+
+// Only bind a network port when launched directly. Importing the app in tests
+// or an embedding host must be side-effect free.
+if (process.argv[1] && path.resolve(process.argv[1]) === __filename) {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Compliance Assistant listening on port ${PORT}`);
+  });
+}
