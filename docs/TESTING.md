@@ -1,33 +1,32 @@
 # Testing inventory and evidence
 
-## Static inventory
+## Test suite
 
-The supplied source archive contains three Jest test files. Counting syntactic test/it declarations in those files gives:
+The project contains three Jest suites with 69 declared tests:
 
-| Suite | Test declarations |
+| Suite | Declared tests |
 |---|---:|
-| Unit (project/tests/unit/compliance.test.js) | 25 |
-| Integration (project/tests/integration/api.test.js) | 26 |
-| Security (project/tests/security/security.test.js) | 18 |
+| Unit | 25 |
+| Integration | 26 |
+| Security | 18 |
 | **Total** | **69** |
 
-These are declaration counts from source inspection. They are not a test-run result, pass count, coverage result, or proof that every security property is enforced.
+**Maintainer-reported result:** The project maintainer reports that all 69 tests pass.
 
-## Claims removed
-
-Earlier project copy claimed 115+ automated tests, 31/31 passing unit tests, 99% vulnerability-detection accuracy, zero security vulnerabilities, 70%+ coverage, and production readiness. Those claims are not supported by the available evidence and should not be repeated unless a reproducible run and evaluation support them.
+**Independent verification status:** This repository update did not independently reproduce the pass result. An attempted local run in the available execution environment stopped during Jest configuration validation because Jest could not resolve `tests/setup.js`, even though the file is present in the source archive. Therefore, this update does not claim an independently verified 69/69 pass result or coverage percentage. A clean CI run should be attached to establish reproducibility.
 
 ## Reproducible verification
 
-From the project directory, install dependencies using the committed lockfile and run:
+From the `project/` directory, install dependencies using the committed lockfile and run:
 
-- npm test
-- npm run test:unit
-- npm run test:integration
-- npm run test:security
-- npm run test:coverage
+- `npm ci`
+- `npm test -- --runInBand`
+- `npm run test:unit`
+- `npm run test:integration`
+- `npm run test:security`
+- `npm run test:coverage`
 
-Record Node/npm versions, install command, exact command output, exit codes, and generated coverage summary. Do not infer that a security test prevents an attack merely because the test accepts a broad range of HTTP status codes; assert the expected safe behavior and absence of sensitive disclosure.
+Record Node/npm versions, exact command output, exit codes, and generated coverage summary. Do not infer that a security test prevents an attack merely because the test accepts a broad range of HTTP status codes; assert the expected safe behavior and absence of sensitive disclosure.
 
 ## Accuracy evaluation
 
