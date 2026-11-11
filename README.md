@@ -8,7 +8,7 @@ It is a **decision-support prototype**, not a compliance certification product, 
 
 ## Current project status
 
-The application source is now included in this repository as [a source archive](source/Compliance-Assistant-source.zip). It contains the Node.js/Express application, Gemini integration, repository scanning logic, PDF report generator, MCP server, sample repository, Jest test files, and setup guide. It excludes populated secrets, `.env`, and `node_modules`.
+The application source is now included in this repository as [a source archive](source/Compliance-Assistant-source.zip). It contains the Node.js/Express application, Gemini integration, repository scanning logic, PDF report generator, MCP server, sample repository, Jest test files, and setup guide. It excludes populated secrets, `.env`, `node_modules`, and the package lockfile.
 
 ## Capabilities
 
@@ -38,7 +38,7 @@ These features describe a decision-support prototype, not independently validate
 | results/ | Audit artifact documentation and sample outputs |
 | SECURITY.md | Credential hygiene and vulnerability reporting |
 
-To run the application, extract the source archive, open `project/`, install dependencies with `npm ci`, configure a Gemini API key in a local `.env` file based on `.env.example`, and follow `SETUP.md`. Never commit the populated `.env`.
+To run the application, extract the source archive, open `project/`, install dependencies with `npm install`, configure a Gemini API key in a local `.env` file based on `.env.example`, and follow `SETUP.md`. Never commit the populated `.env`.
 
 ## Sample audit result
 
