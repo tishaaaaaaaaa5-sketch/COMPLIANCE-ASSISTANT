@@ -8,25 +8,22 @@ It is a **decision-support prototype**, not a compliance certification product, 
 
 ## Current project status
 
-The source archive supplied for review contains the Node.js application, bundled sample repository, Jest tests, report generator, and MCP server. The GitHub repository was empty when this documentation work began, so this first repository update establishes the project documentation and audit interpretation policy. The complete source archive has **not** yet been mirrored into this GitHub repository.
+The application source is now included in this repository as [a source archive](source/Compliance-Assistant-source.zip). It contains the Node.js/Express application, Gemini integration, repository scanning logic, PDF report generator, MCP server, sample repository, Jest test files, and setup guide. It excludes populated secrets, `.env`, and `node_modules`.
 
-No test execution, security certification, model-accuracy benchmark, or production-readiness assessment is claimed by this README.
-
-## Capabilities in the supplied source archive
+## Capabilities
 
 - Gemini-powered compliance Q&A over bundled sample source files.
 - Public GitHub repository scanning with file-selection and size limits.
-- Legacy file assessment / modernization suggestions.
+- Legacy file assessment and modernization suggestions.
 - PDF report generation.
 - MCP tools for asking questions, listing and reading bundled files, modernization, and GitHub scanning.
 
-These features describe the supplied source archive. They should not be read as independently validated enterprise controls.
+These features describe a decision-support prototype, not independently validated enterprise controls.
 
 ## Technology
 
-- Node.js with ECMAScript modules
-- Express
-- Google Gemini SDK (@google/genai)
+- Node.js with ECMAScript modules and Express
+- Google Gemini SDK (`@google/genai`)
 - GitHub REST API via Axios
 - Jest and Supertest
 - PDFKit
@@ -36,11 +33,12 @@ These features describe the supplied source archive. They should not be read as 
 
 | Path | Purpose |
 |---|---|
+| source/ | Downloadable application source archive and contents guide |
 | docs/ | Scope, claims policy, methodology, and testing notes |
 | results/ | Audit artifact documentation and sample outputs |
 | SECURITY.md | Credential hygiene and vulnerability reporting |
 
-The application source archive is being reviewed separately before it is added here. Generated dependencies, local tool caches, .env files, and unrelated build artifacts should not be committed.
+To run the application, extract the source archive, open `project/`, install dependencies with `npm ci`, configure a Gemini API key in a local `.env` file based on `.env.example`, and follow `SETUP.md`. Never commit the populated `.env`.
 
 ## Sample audit result
 
@@ -48,16 +46,11 @@ The supplied sample PDF is titled *Compliance Audit Report*, identifies Bundled 
 
 The PDF identifies IBM watsonx.ai / granite-34b-code-instruct as its analysis engine. Preserve that attribution for this specific artifact; do not relabel it as a Gemini report.
 
-The PDF itself has not yet been uploaded to this repository. The audit content and interpretation are documented in [the sample audit notes](results/sample-audits/README.md). See [audit interpretation](docs/AUDIT_INTERPRETATION.md) before relying on any conclusion in the sample.
+The audit content and interpretation are documented in [the sample audit notes](results/sample-audits/README.md). See [audit interpretation](docs/AUDIT_INTERPRETATION.md) before relying on any conclusion in the sample.
 
-## Testing evidence
+## Testing
 
-The supplied archive contains 69 test/it declarations across three Jest files:
-- Unit: 25 declarations
-- Integration: 26 declarations
-- Security: 18 declarations
-
-These are source-level test declarations, **not proof that 69 tests pass**. The test suite has not been executed in a clean, reproducible environment for this repository update. See [testing notes](docs/TESTING.md).
+The three Jest suites contain 69 test declarations: 25 unit, 26 integration, and 18 security. The project maintainer reports that all 69 tests pass. This repository update has not independently reproduced that pass result; the attempted local rerun was blocked by a Jest setup-file resolution error in the execution environment. See [testing notes](docs/TESTING.md) for the distinction and recommended evidence.
 
 ## Important limitations
 
