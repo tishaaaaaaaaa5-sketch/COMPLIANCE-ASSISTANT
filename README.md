@@ -10,7 +10,7 @@
   <img alt="Express" src="https://img.shields.io/badge/Express-API-000000?logo=express&logoColor=white" />
   <img alt="Google Gemini" src="https://img.shields.io/badge/AI-Google%20Gemini-4285F4?logo=googlegemini&logoColor=white" />
   <img alt="MCP" src="https://img.shields.io/badge/Integration-MCP-6B5B95" />
-  <img alt="Tests" src="https://img.shields.io/badge/Tests-69%20passing-success" />
+  <img alt="Tests" src="https://img.shields.io/badge/Tests-69%20total-blue" />
 </p>
 
 ---
