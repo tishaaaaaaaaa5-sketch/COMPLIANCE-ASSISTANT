@@ -80,9 +80,9 @@ npm run test:security -- --runInBand
 
 A GitHub Actions workflow runs the full Jest suite on pushes and pull requests. The latest verified run reports **3 suites passed and 69 tests passed (0 failed)** on Node.js 22.23.4. See the [CI run](https://github.com/tishaaaaaaaaa5-sketch/COMPLIANCE-ASSISTANT/actions/runs/43122334444) and [testing record](docs/TESTING.md). Re-run CI after every code change; this status applies to the recorded commit only.
 
-## Sample audit
+## Historical sample audit
 
-The historical sample audit PDF is retained under `results/sample-audits/`. It was produced with a different model provider from the current source and should be interpreted only as a historical artifact. See its accompanying README for scope and provenance.
+`results/sample-audits/README.md` records the scope and provenance of an earlier sample report. The historical PDF itself is not part of the browsable source/test package in this repository snapshot; do not treat it as a current test fixture or verified compliance result.
 
 ## Limitations
 
